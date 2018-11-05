@@ -1,37 +1,132 @@
-// To make images retina, add a class "2x" to the img element
-// and add a <image-name>@2x.png image. Assumes jquery is loaded.
+$(function () {
 
+	$('.post__main img').on('click', function () {
+		var $img = $(this);
 
-function isRetina() {
-	var mediaQuery = "(-webkit-min-device-pixel-ratio: 1.5),\
-					  (min--moz-device-pixel-ratio: 1.5),\
-					  (-o-min-device-pixel-ratio: 3/2),\
-					  (min-resolution: 1.5dppx)";
- 
-	if (window.devicePixelRatio > 1)
-		return true;
- 
-	if (window.matchMedia && window.matchMedia(mediaQuery).matches)
-		return true;
- 
-	return false;
-};
- 
- 
-function retina() {
-	
-	if (!isRetina())
-		return;
-	
-	$("img.2x").map(function(i, image) {
-		
-		var path = $(image).attr("src");
-		
-		path = path.replace(".png", "@2x.png");
-		path = path.replace(".jpg", "@2x.jpg");
-		
-		$(image).attr("src", path);
+		$.fancybox.open([{
+			src: $img.attr('src'),
+			type: 'image'
+		}]);
 	});
-};
- 
-$(document).ready(retina);
+
+	$('[data-fancybox]').fancybox({
+		// closeClickOutside: false, 
+		image: {
+			protect: true
+		}
+	});
+
+	// key bind
+
+	// j  down
+	// k  top
+	// t  page top
+	// b  page bottom
+
+	// i  go index
+	var $body = $('html');
+
+	var isKeydown = false;
+	$body.on('keydown', function (e) {
+		// console.log(e.which, 'key down');
+
+		switch (e.which) {
+			case 74: // j down
+				if (!isKeydown) {
+					isKeydown = true;
+					requestAnimationFrame(function animate() {
+						var curTop = window.scrollY;
+						window.scrollTo(0, curTop + 15);
+
+						if (isKeydown) {
+							requestAnimationFrame(animate);
+						}
+					});
+				}
+
+				break;
+
+			case 75: // k up
+				if (!isKeydown) {
+					isKeydown = true;
+					requestAnimationFrame(function animate() {
+						var curTop = window.scrollY;
+						window.scrollTo(0, curTop - 15);
+
+						if (isKeydown) {
+							requestAnimationFrame(animate);
+						}
+					});
+				}
+
+				break;
+
+			case 191: // shift + / = ? show help modal
+				break;
+
+				// 16 shift
+			case 84: // t
+				window.scrollToTop(1);
+				break;
+
+			case 66: // b
+				window.scrollToBottom();
+				break;
+
+			case 78: // n half
+				window.scrollPageDown(1);
+				break;
+
+			case 77: // m
+				window.scrollPageUp(1);
+				break;
+		}
+
+	});
+
+	$body.on('keyup', function (e) {
+		isKeydown = false;
+	});
+
+	// print hint
+
+	var comments = [
+		'',
+		'                    .::::.            快捷键：',
+		'                  .::::::::.            j：下移',
+		'                 :::::::::::            k：上移',
+		"             ..:::::::::::'             t：移到最顶",
+		"           '::::::::::::'               b：移到最底",
+		'             .::::::::::                n：下移很多',
+		"        '::::::::::::::..               m：上移很多",
+		'             ..::::::::::::.',
+		'           ``::::::::::::::::',
+		"            ::::``:::::::::'        .:::.",
+		"           ::::'   ':::::'       .::::::::.",
+		"         .::::'      ::::     .:::::::'::::.",
+		"        .:::'       :::::  .::::::::'  ':::::.",
+		"       .::'        :::::::::::::::'      ':::::.",
+		"      .::'        :::::::::::::::'          ':::.",
+		"  ...:::          :::::::::::::'              ``::.",
+		" ```` ':.         '::::::::::'                  ::::..",
+		"                    ':::::'                    ':'````..",
+		''
+	];
+
+	comments.forEach(function (item) {
+		console.log('%c' + item, 'color: #399c9c');
+	});
+
+	$('.btn-reward').on('click', function (e) {
+		e.preventDefault();
+
+		var $reward = $('.reward-wrapper');
+		$reward.slideToggle();
+	});
+
+	$('body').addClass('queue-in');
+	setTimeout(function() {
+		$('body').css({ opacity: 1}).removeClass('queue-in');
+	}, 500);
+
+});
